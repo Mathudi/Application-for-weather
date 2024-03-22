@@ -131,8 +131,10 @@
           <div>
             <h1 class="current-city" id="current-city">Paris</h1>
             <p class="current-details">
-              <span id="current-date"></span>, moderate rain <br />
-              Humidity: <strong>87%</strong>, Wind: <strong>7.2km/h</strong>
+              <span id="current-date"></span>,
+              <span id="weather-description">-</span> <br />
+              Humidity: <span id="humidity">-</span>, Wind:
+              <span id="wind-speed">-</span> km/h
             </p>
           </div>
           <div class="current-temperature">
@@ -147,12 +149,7 @@
         <p>
           This project was coded by
           <a href="#" target="_blank">Mathudi Mamasonya</a> and is
-          <a
-            href="https://github.com/Mathudi/alx-system_engineering-devops"
-            target="_blank"
-          >
-            on GitHub</a
-          >
+          <a href="https://github.com/Mathudi" target="_blank"> on GitHub</a>
           and
           <a href="https://app.netlify.com/teams/mathudi/sites" target="_blank"
             >hosted on Netlify</a
@@ -168,6 +165,12 @@
       let cityElement = document.querySelector("#current-city");
       cityElement.innerHTML = response.data.city;
       temperatureElement.innerHTML = temperature;
+      document.getElementById("humidity").textContent =
+        response.data.main.humidity + "%";
+      document.getElementById("wind-speed").textContent =
+        response.data.wind.speed;
+      document.getElementById("weather-description").textContent =
+        response.data.weather[0].description;
     }
 
     function search(event) {
@@ -211,7 +214,7 @@
     let searchForm = document.querySelector("#search-form");
     searchForm.addEventListener("submit", search);
 
-    let currentDateELement = document.querySelector("#current-date");
+    let currentDateElement = document.querySelector("#current-date");
     let currentDate = new Date();
 
     currentDateELement.innerHTML = formatDate(currentDate);
