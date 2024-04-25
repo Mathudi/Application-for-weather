@@ -132,9 +132,9 @@
             <h1 class="current-city" id="current-city">Paris</h1>
             <p class="current-details">
               <span id="current-date"></span>,
-              <span id="weather-description">-</span> <br />
-              Humidity: <span id="humidity">-</span>, Wind:
-              <span id="wind-speed">-</span> km/h
+              <span id="weather-description">moderate rain</span><br />
+              Humidity: <strong id="humidity"></strong>, Wind:
+              <strong id="wind-speed"></strong>
             </p>
           </div>
           <div class="current-temperature">
@@ -159,43 +159,43 @@
     </div>
   </body>
   <script>
-    function displayTemperature(response) {
+    function refreshWeather(response) {
       let temperatureElement = document.querySelector("#current-temperature");
       let temperature = Math.round(response.data.temperature.current);
       let cityElement = document.querySelector("#current-city");
-      cityElement.innerHTML = response.data.city;
+      let humidityElement = document.querySelector("#humidity");
+      let windSpeedElement = document.querySelector("#wind-speed");
+      let descriptionElement = document.querySelector("#weather-description");
+      let iconElement = document.querySelector("#icon");
+      let timeElement = document.querySelector("#current-date");
+      let date = new Date(response.data.time * 1000);
+
       temperatureElement.innerHTML = temperature;
-      document.getElementById("humidity").textContent =
-        response.data.main.humidity + "%";
-      document.getElementById("wind-speed").textContent =
-        response.data.wind.speed;
-      document.getElementById("weather-description").textContent =
-        response.data.weather[0].description;
+      timeElement.innerHTML = formatDate(date);
+      cityElement.innerHTML = response.data.city;
+      humidityElement.innerHTML = `${response.data.temperature.humidity}%`;
+      windSpeedElement.innerHTML = `${response.data.wind.speed}km/h`;
+      descriptionElement.innerHTML = response.data.condition.description;
+      iconElement.innerHTML = `<img src="${response.data.condition.icon_url}" class="weather-app-icon" />`;
+
+      getForecast(response.data.city);
     }
-
-    function search(event) {
-      event.preventDefault();
-      let searchInputElement = document.querySelector("#search-input");
-      let city = searchInputElement.value;
-
-      let apiKey = "b2a5adcct04b33178913oc335f405433";
+    function searchCity(city) {
+      let apiKey = "365154818b1o7bc04fe1f057a5t13314";
       let apiUrl = `https://api.shecodes.io/weather/v1/current?query=${city}&key=${apiKey}&units=metric`;
 
-      axios.get(apiUrl).then(displayTemperature);
+      axios.get(apiUrl).then(refreshWeather);
+    }
+
+    function handleSearch(event) {
+      event.preventDefault();
+      let searchInputElement = document.querySelector("#search-input");
+      searchCity(searchInputElement.value);
     }
 
     function formatDate(date) {
       let minutes = date.getMinutes();
       let hours = date.getHours();
-      let day = date.getDay();
-
-      if (minutes < 10) {
-        minutes = `0${minutes}`;
-      }
-
-      if (hours < 10) {
-        hours = `0${hours}`;
-      }
 
       let days = [
         "Sunday",
@@ -206,17 +206,19 @@
         "Friday",
         "Saturday",
       ];
+      let day = days[date.getDay()];
+      if (minutes < 10) {
+        minutes = `0${minutes}`;
+      }
 
-      let formattedDay = days[day];
-      return `${formattedDay} ${hours}:${minutes}`;
+      if (hours < 10) {
+        hours = `0${hours}`;
+      }
+      return `${day} ${hours}:${minutes}`;
     }
 
     let searchForm = document.querySelector("#search-form");
-    searchForm.addEventListener("submit", search);
-
-    let currentDateElement = document.querySelector("#current-date");
-    let currentDate = new Date();
-
-    currentDateELement.innerHTML = formatDate(currentDate);
+    searchForm.addEventListener("submit", handleSearch);
+    searchCity("Paris");
   </script>
 </html>
